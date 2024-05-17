@@ -1,4 +1,4 @@
-# Tabulation generator (output tabulations for publication) from a Pandas DataFrame)
+# Tabulation generator (output tabulations for publication) from a Pandas DataFrame
 ![logo](./Images/tabulation_example.png)
 This repository automates the creation of output tabulations in .xlsx files from a Pandas DataFrame.
 
