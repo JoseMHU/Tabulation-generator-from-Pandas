@@ -43,7 +43,16 @@ def start_code(db_name: str, table_type: int, db: pd.DataFrame, db_vars: pd.Data
     else:
         file_name = f"{db_name}_absolute_value_table.xlsx"
 
-    SECONDARY_VARS = [db_vars.loc[index, "VAR"] for index in db_vars.index if db_vars.loc[index, "DISAGGREGATE"]]
+    secondary_vars = [db_vars.loc[index, "VAR"] for index in db_vars.index if db_vars.loc[index, "DISAGGREGATE"]]
+    if not secondary_vars and table_type != 4:
+
+        raise TypeError("A disaggregation of data was indicated (table_type != 4) but there is no variable indicated to"
+                        "disaggregate. (All variables in DISAGGREGATE in db_vars = False)")
+
+    else:
+
+        secondary_vars = ["pass"]
+
     excel_file = ExcelFile(file_name=file_name, tables_type=table_type)
 
     def structure_generator(field: str) -> dict:
@@ -74,7 +83,7 @@ def start_code(db_name: str, table_type: int, db: pd.DataFrame, db_vars: pd.Data
                 else:
                     factor = db_vars.loc[index, "SUM"]
 
-                for secondary_var in SECONDARY_VARS:
+                for secondary_var in secondary_vars:
                     if table_type == 4:
                         secondary_var = question
                     df_dict = {}
