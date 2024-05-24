@@ -9,7 +9,7 @@ from utilities import chi2_test
 class ExcelFile:
     def __init__(self, file_name: str, tables_type: int):
         self.file_type = tables_type
-        if self.file_type not in range(0, 5):
+        if self.file_type not in range(0,5):
             raise ValueError("Wrong table type. tables_type is in (0,1,2,3,4)")
         self.file_name = file_name
         self.row = 1
@@ -17,7 +17,6 @@ class ExcelFile:
         self.config_style = dict(config_json)
         self.workbook = Workbook()
         self.worksheet = None
-        self.sheet_name = None
         if tables_type != 0:
             self.chi_square_test = False
         else:
@@ -109,7 +108,13 @@ class ExcelFile:
 
                     else:
                         cell.number_format = "#,##0"
-
+                if cell.row == self.worksheet.max_row and self.file_type != 3:
+                    for column in range(1, len_df + 1):
+                        cell = self.worksheet.cell(row=self.worksheet.max_row, column=column) 
+                        cell.border = Border(top=Side(border_style=self.config_style["Footer"]["Border"]["border_style"],
+                                               color=self.config_style["Footer"]["Border"]["color"]))
+                        cell.font = Font(bold=True)
+                        
         # Footer
         if footer_text:
             footer_cell = self.worksheet.cell(row=self.worksheet.max_row + 1, column=1)

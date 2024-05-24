@@ -53,7 +53,8 @@ def calculate_percentages(structure: dict | None, df: pd.DataFrame, table_type: 
 
 def chi2_test(df: pd.DataFrame, alpha=0.05) -> tuple:
     df.drop(columns="Total", inplace=True)
-
+    df.drop(df.index[-1], inplace=True)
+    
     df = df.melt(id_vars='Var', var_name='index', value_name='Count')
     df = df.pivot(index='index', columns='Var', values='Count')
 
@@ -73,3 +74,12 @@ def chi2_test(df: pd.DataFrame, alpha=0.05) -> tuple:
         return (False,
                 "* The Chi-squeare statistic is not significant at the .05 level.",
                 f"p-value: {np.round(p_val, 3)}")
+
+    
+def insert_total_row(df: pd.DataFrame) -> pd.DataFrame:
+    _sum = df.drop(columns="Var").sum()
+    
+    row_total = pd.DataFrame(_sum).T
+    row_total["Var"] = "Total"
+    
+    return pd.concat([df, row_total], ignore_index=True)

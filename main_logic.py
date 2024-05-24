@@ -1,7 +1,7 @@
 import pandas as pd
 from excel_class import ExcelFile
 from utilities import (category_order, remove_duplicates,
-                       interpret_instruction, calculate_percentages)
+                       interpret_instruction, calculate_percentages, insert_total_row)
 
 
 def start_code(db_name: str, table_type: int, db: pd.DataFrame, db_vars: pd.DataFrame, footer_text=None,
@@ -34,7 +34,6 @@ def start_code(db_name: str, table_type: int, db: pd.DataFrame, db_vars: pd.Data
     -------
     None
 
-
     """
     if table_type == 4:
         file_name = f"{db_name}_simple_table.xlsx"
@@ -42,19 +41,17 @@ def start_code(db_name: str, table_type: int, db: pd.DataFrame, db_vars: pd.Data
         file_name = f"{db_name}_percentage_table.xlsx"
     else:
         file_name = f"{db_name}_absolute_value_table.xlsx"
+    
+    secondary_vars_list = [db_vars.loc[index,"VAR"] for index in db_vars.index if db_vars.loc[index, "DISAGGREGATE"]]
 
-    secondary_vars = [db_vars.loc[index, "VAR"] for index in db_vars.index if db_vars.loc[index, "DISAGGREGATE"]]
-    if not secondary_vars and table_type != 4:
-
+    if not secondary_vars_list and table_type != 4:
         raise TypeError("A disaggregation of data was indicated (table_type != 4) but there is no variable indicated to"
-                        "disaggregate. (All variables in DISAGGREGATE in db_vars = False)")
-
-    else:
-
-        secondary_vars = ["pass"]
-
+                        "disaggregate. (All variables in DISAGGREGATE of db_vars = False)")
+    elif table_type == 4:
+        secondary_vars_list = ["pass"]
+        
     excel_file = ExcelFile(file_name=file_name, tables_type=table_type)
-
+    
     def structure_generator(field: str) -> dict:
         field_set = remove_duplicates([x for x in db[field].tolist() if str(x) != "nan"])
         field_set.insert(0, "Var")
@@ -65,25 +62,25 @@ def start_code(db_name: str, table_type: int, db: pd.DataFrame, db_vars: pd.Data
                 category = field_set
         except KeyError:
             category = field_set
-
+            
         result = {}
         for i in category:
             result[i] = []
-
+        
         return result
-
+    
     for page in remove_duplicates(db_vars["PAGE"]):
         data = []
         for index in db_vars.index:
             if db_vars.loc[index, "PAGE"] == page:
                 question = db_vars.loc[index, "VAR"]
-
+                
                 if "${" in db_vars.loc[index, "SUM"]:
                     factor = interpret_instruction(db_vars.loc[index, "SUM"])
                 else:
                     factor = db_vars.loc[index, "SUM"]
 
-                for secondary_var in secondary_vars:
+                for secondary_var in secondary_vars_list:
                     if table_type == 4:
                         secondary_var = question
                     df_dict = {}
@@ -125,13 +122,16 @@ def start_code(db_name: str, table_type: int, db: pd.DataFrame, db_vars: pd.Data
                     elif table_type == 4:
                         df = calculate_percentages(None, df, table_type)
 
-                    df_dict[secondary_var] = df
-                    data.append((question, df_dict,
-                                 f"This table was calculated by a variable operation {factor[0]} * {factor[2]}" if type(
-                                     factor) is tuple else None))
+                    if table_type != 3:
+                        df_dict[secondary_var] = insert_total_row(df)
+                    else:
+                        df_dict[secondary_var] = df
+
+                    data.append((question, df_dict,  f"This table was calculated by a variable operation {factor[0]} * "
+                                                     f"{factor[2]}" if type(factor) is tuple else None))
                     if table_type == 4:
                         break
-
+                    
         for question, df_dict, footer_text_factor in data:
             if footer_text and footer_text_factor:
                 footer_text_table = str(footer_text) + " // " + str(footer_text_factor)
