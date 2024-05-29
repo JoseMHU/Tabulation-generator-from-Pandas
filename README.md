@@ -43,8 +43,15 @@ Adjustments should only be made to the `start_code` function in the `main.py` fi
 ## What's New?
 
 ### Latest Adjustments:
+**22/05/2024**
+
 - **Simple Tables**: Added the option to produce simple tables without crossing with any variable, where data is presented in quantities and percentages (option 4 in the `table_type` variable).
 - **Bug Fixes**: Fixed a bug in the code when calculating totals for variables that have blank values.
 - **Value Sorting**: Improved the code so that the values in the `Var` column of the output tables are also sorted according to the order specified in the `config_values.json` file.
 - **Chi-Squared Test**: In the absolute values option (option 0 in the `table_type` variable), added the chi-squared test to evaluate the degree of independence between variables.
 - **Variable Operations**: Modified the logic of the instructions placed in the `SUM` column of `db_vars` to support the specification of variables to operate. It is now possible to use the multiplication of two variables as a factor by passing the value `Variable 1,${multiply},Variable 2`.
+
+**23/05/2024**
+
+- **Total row**: Added a totals row to all tables except %rows (`table_type=3`).
+- **Bug Fixes**: Fixed an error in the code that originated when adding the simple tables option.
