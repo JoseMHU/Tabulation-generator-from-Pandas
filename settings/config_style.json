@@ -12,7 +12,7 @@
         },
         "Border": {
             "border_style": "medium",
-            "color": "86754d"
+            "color": "444444"
         }
     },
     "Sub_Header": {
@@ -40,11 +40,11 @@
         },
         "Border": {
             "border_style": "medium",
-            "color": "86754d"
+            "color": "444444"
         },
         "PatternFill": {
-            "start_color": "c3b6a1",
-            "end_color": "c3b6a1",
+            "start_color": "C5D9F1",
+            "end_color": "C5D9F1",
             "fill_type": "solid"
         }
     },
@@ -71,7 +71,7 @@
         },
         "Border": {
             "border_style": "medium",
-            "color": "86754d"
+            "color": "444444"
         }
     }
 }
