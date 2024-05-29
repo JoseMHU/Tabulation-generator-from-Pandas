@@ -40,6 +40,8 @@ With these settings and by defining the table styles in the `config_style.json` 
 
 Adjustments should only be made to the `start_code` function in the `main.py` file by specifying the name of the Excel file to be generated (`db_name`), the type of tables to be generated (`table_type`), the dataframe with the data to be tabulated (`db`), the dataframe with the adjustment data for processing the tables (`db_vars`), and optionally a filter for the dataframe (`Split_df_by`) and a footer text for each table (`footer_text`).
 
+Optionally, adjustments can also be made to the files within the `settings` directory to configure the way data is presented and the format of the tables. In `config_values.json`, the order in which variables should be displayed in the tables is specified, and in `config_style.json`, all the style parameters of the tables are configured.
+
 ## What's New?
 
 ### Latest Adjustments:
