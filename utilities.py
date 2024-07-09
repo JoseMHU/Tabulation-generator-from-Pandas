@@ -54,11 +54,7 @@ def calculate_percentages(structure: dict | None, df: pd.DataFrame, table_type: 
 def chi2_test(df: pd.DataFrame, alpha=0.05) -> tuple:
     df.drop(columns="Total", inplace=True)
     df.drop(df.index[-1], inplace=True)
-    
-    df = df.melt(id_vars='Var', var_name='index', value_name='Count')
-    df = df.pivot(index='index', columns='Var', values='Count')
-
-    observed = np.array(df)
+    observed = df.drop(columns='Var').to_numpy()
 
     try:
         _, p_val, _, _ = stats.chi2_contingency(observed)
