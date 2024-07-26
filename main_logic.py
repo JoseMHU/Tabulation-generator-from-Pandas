@@ -30,6 +30,7 @@ def start_code(db_name: str, table_type: int, db: pd.DataFrame, db_vars: pd.Data
         table_type = 2 -> % columns
         table_type = 3 -> % rows
         table_type = 4 -> % Simple absolute value and % total
+        table_type = 5 -> Long description
     Returns
     -------
     None
@@ -49,8 +50,11 @@ def start_code(db_name: str, table_type: int, db: pd.DataFrame, db_vars: pd.Data
                         "disaggregate. (All variables in DISAGGREGATE of db_vars = False)")
     elif table_type == 4:
         secondary_vars_list = ["pass"]
-        
-    excel_file = ExcelFile(file_name=file_name, tables_type=table_type)
+      
+    if table_type <= 4:
+      excel_file = ExcelFile(file_name=file_name, tables_type=table_type)
+    else:
+      excel_file = None
     
     def structure_generator(field: str) -> dict:
         field_set = remove_duplicates([x for x in db[field].tolist() if str(x) != "nan"])
@@ -131,17 +135,30 @@ def start_code(db_name: str, table_type: int, db: pd.DataFrame, db_vars: pd.Data
                                                      f"{factor[2]}" if type(factor) is tuple else None))
                     if table_type == 4:
                         break
-                    
-        for question, df_dict, footer_text_factor in data:
-            if footer_text and footer_text_factor:
-                footer_text_table = str(footer_text) + " // " + str(footer_text_factor)
-            elif footer_text_factor:
-                footer_text_table = str(footer_text_factor)
-            elif footer_text:
-                footer_text_table = str(footer_text)
-            else:
-                footer_text_table = None
-            excel_file.add_sheet(sheet_name=f"Section - {page}", data=df_dict, main_var_name=question,
-                                 footer_text=footer_text_table)
-        excel_file.restart()
-    excel_file.save()
+                      
+                    elif table_type == 5:
+                        df.insert(0, 'Ask', question)
+                        if len(metadata) > 0:
+                            metadata = pd.concat([metadata, df], ignore_index=True)
+                        else:
+                            metadata = df
+                        break
+                      
+        if table_type <= 4:            
+          for question, df_dict, footer_text_factor in data:
+              if footer_text and footer_text_factor:
+                  footer_text_table = str(footer_text) + " // " + str(footer_text_factor)
+              elif footer_text_factor:
+                  footer_text_table = str(footer_text_factor)
+              elif footer_text:
+                  footer_text_table = str(footer_text)
+              else:
+                  footer_text_table = None
+              excel_file.add_sheet(sheet_name=f"Section - {page}", data=df_dict, main_var_name=question,
+                                   footer_text=footer_text_table)
+        if table_type <= 4:    
+          excel_file.restart()
+    if table_type <= 4:
+      excel_file.save()
+    else:
+      metadata.to_excel("results//METADATA.xlsx", index=False, header=True)
