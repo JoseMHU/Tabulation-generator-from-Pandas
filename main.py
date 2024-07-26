@@ -17,6 +17,7 @@ if __name__ == "__main__":
         table_type = 2 -> % Columns
         table_type = 3 -> % Rows
         table_type = 4 -> % Simple absolute value and % total
+        table_type = 5 -> Long description
     db : pd.DataFrame
         Main data source.
     db_vars : pd.DataFrame
