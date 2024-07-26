@@ -36,6 +36,7 @@ def start_code(db_name: str, table_type: int, db: pd.DataFrame, db_vars: pd.Data
     None
 
     """
+metadata = pd.DataFrame()
     if table_type == 4:
         file_name = f"{db_name}_simple_table.xlsx"
     elif table_type != 0:
