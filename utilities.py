@@ -52,7 +52,7 @@ def calculate_percentages(structure: dict | None, df: pd.DataFrame, table_type: 
 
 
 def chi2_test(df: pd.DataFrame, alpha=0.05) -> tuple:
-    df.drop(columns="Total", inplace=True)
+    df.drop(columns=["Total", "Var"], inplace=True)
     df.drop(df.index[-1], inplace=True)
 
     observed = np.array(df)
